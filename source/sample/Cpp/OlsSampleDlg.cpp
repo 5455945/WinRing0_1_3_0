@@ -262,8 +262,19 @@ void COlsSampleDlg::Refresh()
 	}
 	else
 	{
-		edit += _T("Failure : Change Thread Affinity Mask\r\n");		
+		edit += _T("Failure : Change Thread Affinity Mask\r\n");
 	}
+
+    eax = 0;
+    edx = 0;
+    ULONG result = SetThreadAffinityMask(GetCurrentThread(), 1);
+    Rdmsr(0x19c, &eax, &edx);//read Temperature
+    cstr.Format(_T("%08X: %08X %08X\r\n"), 0x19c, edx, eax);
+    SetThreadAffinityMask(GetCurrentThread(), result);
+    //char s[20];
+    //sprintf(s, "%d", 100 - ((eax & 0x007f0000) >> 16));
+    cstr.Format(_T("cpuÎÂ¶È: %d\r\n"), 100 - ((eax & 0x007f0000) >> 16));
+    edit += cstr;
 
 	//-----------------------------------------------------------------------------
 	// CPUID (Standard/Extended)
